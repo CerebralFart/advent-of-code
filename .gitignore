@@ -1,0 +1,8 @@
+# Libraries
+/node_modules/
+
+# Compiled code
+*.js
+
+# Secrets
+/cookie.txt
