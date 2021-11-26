@@ -1,28 +1,65 @@
-const ops: { [key: string]: (m: IntCode) => void } = {
-    1: machine => machine.write(
-        machine.readOffset(3),
-        machine.readArgument(1) + machine.readArgument(2),
-    ),
-    2: machine => machine.write(
-        machine.readOffset(3),
-        machine.readArgument(1) * machine.readArgument(2),
-    ),
-    3: machine => machine.write(
-        machine.readOffset(1),
-        machine.bufferReadIn(),
-    ),
-    4: machine => machine.bufferWriteOut(
-        machine.readArgument(1)
-    ),
-    99: machine => machine.terminate(),
-};
-
-const opWidth: { [key: keyof typeof ops]: number } = {
-    1: 4,
-    2: 4,
-    3: 2,
-    4: 2,
-    99: 1,
+const ops: { [key: string]: (m: IntCode) => number } = {
+    1: machine => {
+        machine.write(
+            machine.readOffset(3),
+            machine.readArgument(1) + machine.readArgument(2),
+        );
+        return 4;
+    },
+    2: machine => {
+        machine.write(
+            machine.readOffset(3),
+            machine.readArgument(1) * machine.readArgument(2),
+        );
+        return 4;
+    },
+    3: machine => {
+        machine.write(
+            machine.readOffset(1),
+            machine.bufferReadIn(),
+        );
+        return 2;
+    },
+    4: machine => {
+        machine.bufferWriteOut(
+            machine.readArgument(1),
+        );
+        return 2;
+    },
+    5: machine => {
+        if (machine.readArgument(1) !== 0) {
+            machine.setPointer(machine.readArgument(2));
+            return 0;
+        } else {
+            return 3;
+        }
+    },
+    6: machine => {
+        if (machine.readArgument(1) === 0) {
+            machine.setPointer(machine.readArgument(2));
+            return 0;
+        } else {
+            return 3;
+        }
+    },
+    7: machine => {
+        machine.write(
+            machine.readOffset(3),
+            machine.readArgument(1) < machine.readArgument(2) ? 1 : 0,
+        );
+        return 4;
+    },
+    8: machine => {
+        machine.write(
+            machine.readOffset(3),
+            machine.readArgument(1) === machine.readArgument(2) ? 1 : 0,
+        );
+        return 4;
+    },
+    99: machine => {
+        machine.terminate();
+        return 1;
+    },
 };
 
 export default class IntCode {
@@ -53,8 +90,7 @@ export default class IntCode {
                 throw new Error(`Encountered unknown or disabled opcode [${opCode}]`);
             }
 
-            ops[opCode](this);
-            this.pointer += opWidth[opCode];
+            this.pointer += ops[opCode](this);
         }
 
         return this.data;
@@ -96,6 +132,10 @@ export default class IntCode {
 
     getBufferOut(): number[] {
         return this.outBuffer;
+    }
+
+    setPointer(pointer: number): void {
+        this.pointer = pointer;
     }
 
     terminate() {
