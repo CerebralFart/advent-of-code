@@ -1,0 +1,23 @@
+{
+  "name": "advent-of-code",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "precompile": "rimraf dist/",
+    "compile": "rollup -c rollup.config.js",
+    "compile:watch": "rollup -c rollup.config.js --watch",
+    "execute": "node ./dist/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@rollup/plugin-dynamic-import-vars": "^2.0.2",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^3.8.1",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "typescript": "^4.9.4"
+  }
+}
